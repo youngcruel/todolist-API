@@ -1,14 +1,19 @@
-const http = require('http');
+import config from './config/config.js';
+import express from 'express';
+import connectDB from './src/gateway/db.js';
+import setup from './src/routes/activityRoutes.js';
 
-const host = 'localhost';
-const port = 8000;
-const requestListener = (req, res) => {
-    res.writeHead(200);
-    //res.status = 404;
-    res.end('Il mio primo server!');
-};
+const app = express();
+app.use(express.json());
 
-const server = http.createServer(requestListener);
-server.listen(port, host, () => {
-    console.log(`Server partito su http://${host}:${port}`);
-});
+try {
+    await connectDB();
+    setup(app);
+    app.listen(config.port, config.host, () => {
+        console.log(`Server partito su http://${config.host}:${config.port}`);
+    });
+    
+} catch (err) {
+    console.log('server not started', error.message);
+    process.exit(1);
+}
