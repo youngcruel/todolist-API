@@ -1,105 +1,82 @@
-import {dbFile as _dbFile} from '../../config/config.js';
-const dbFile = _dbFile;
-import fs from 'fs';
-import activitySchema from '../schema/todoListSchema.js';
-import readline from 'readline';
-import { version } from 'os';
-import { error } from 'console';
-import Activity from '../models/Activity.js';
+// Questo file activityRepository.js contiene un repository per gestire le operazioni CRUD (Create, Read, Update, Delete)
+// sulle attività in un'applicazione To-Do List. Utilizza lo schema activitySchema per interagire con il database MongoDB.
 
-const add = async(data) => {   
-     const activity = await activitySchema.create(data).catch(error => {
-        console.error('Errore durante la creazione dell\'attività:', error.message);
-        return null;
+import Activity from '../models/Activity.js';
+import activitySchema from '../schema/todoListSchema.js'; //Importo il modello Activity e lo schema activitySchema (Schema di Mongoose) per interagire con il database.
+
+// add - CREATE
+
+// Questa funzione crea una nuova attività nel database utilizzando i dati forniti. 
+// Se c'è un errore durante la creazione, viene loggato e la funzione restituisce null. 
+// Altrimenti, restituisce l'attività creata in formato JSON.
+
+const add = async (data) => {                    //La funzione add accetta un oggetto data come argomento, che contiene i dati per creare una nuova attività.
+     const activity = await activitySchema.create(data).catch(error => {    //La funzione create di Mongoose crea un nuovo documento nel database utilizzando i dati forniti.
+        console.error('Errore durante la creazione dell\'attività:', error.message); 
+        return null;                                                        //Se c'è un errore durante la creazione, viene loggato e la funzione restituisce null.
      });
-     /*return activity.toJSON({
-        flattenObjectIds: true, 
-        versionKey: false});*/
-        return new Activity(activity);
+     //return new Activity(activity);
+     return activity.toJSON({flattenObjectIds: true, versionKey: false}); //Altrimenti, restituisce l'attività creata in formato JSON.
     };
 
-const getActivities = async() => {
-    const activities = await activitySchema.find().catch((error) => {
-        console.error('Errore durante la ricerca delle attività:', error.message);
-        return null;
-    }
-    );
-    return activities.map((activity) => 
-        new Activity(activity));
-        /*activity.toJSON({
-        flattenObjectIds: true,
-        versionKey: false */
+// getActivities - READ
+
+// Questa funzione recupera tutte le attività dal database. 
+// Se c'è un errore durante la ricerca, viene loggato e la funzione restituisce null. 
+// Altrimenti, restituisce un array di attività in formato JSON.
+
+const getActivities = async () => {                     //La funzione getActivities non accetta argomenti e recupera tutte le attività dal database.
+    const activities = await activitySchema.find().catch(error => {     //La funzione find di Mongoose recupera tutti i documenti dal database.
+        console.error('Errore durante la ricerca delle attività:', error.message); 
+        return null;                                         //Se c'è un errore durante la ricerca, viene loggato e la funzione restituisce null.
+    });
+    //return activities.map(activity => new Activity(activity));
+    return activities.map(activity => activity.toJSON({flattenObjectIds: true, versionKey: false}));//Altrimenti, restituisce un array di attività in formato JSON.
 }
 
-//Cerca un'attività per ID
-const getActivity = async (id) => {
-    // Controlla se il file esiste prima di leggerlo
-    if (!checkDb()) {
-        return null; // Se il file non esiste, restituisce `null`
-    }
+// getActivity - READ
 
-    try {
-        return await new Promise((resolve, reject) => {
-            // Crea un'interfaccia per leggere il file riga per riga
-            const readlineInterface = readline.createInterface({
-                input: fs.createReadStream(dbFile), // Apre il file in modalità lettura streaming
-                crDelay: Infinity // Evita problemi con i caratteri di fine riga tra sistemi operativi diversi
-            });
+// Questa funzione cerca un'attività specifica per ID. 
+// Se l'attività viene trovata, viene restituita in formato JSON, altrimenti null. 
+// Gli errori vengono loggati.
 
-            // Evento che si attiva ogni volta che viene letta una riga
-            readlineInterface.on('line', (line) => {
-                const activity = JSON.parse(line); // Converte la riga in un oggetto JSON
-                if (activity.id == id) { // Se l'ID della riga corrisponde a quello cercato
-                    resolve(activity); // Risolve la Promise restituendo l'attività trovata
-                }
-            });
+const getActivity = async (id) => {                 //La funzione getActivity accetta un ID come argomento e cerca un'attività corrispondente nel database.
+    try{
+        const activity = await activitySchema.findById(id);  //La funzione findById di Mongoose cerca un documento per ID nel database.
 
-            // Evento che si attiva quando si raggiunge la fine del file
-            readlineInterface.on('close', () => {
-                return reject(new Error('not found')); // Se non trova l'attività, rifiuta la Promise
-            });
-        });
-    } catch (e) {
-        console.error("Errore nella lettura dell'attività:", e.message);
-        return null; // In caso di errore nel parsing del JSON o altro, restituisce `null`
+        return activity ? activity.toJSON({ flattenObjectIds: true, versionKey: false }) : null; 
+        //Se l'attività viene trovata, viene restituita in formato JSON, altrimenti null.
+    } catch (error) { 
+        console.error('Errore durante la ricerca dell\'attività:', error.message);  //Gli errori vengono loggati.
+        return null;
     }
 };
-const updateActivity = async (id, data) => {
-    if (!fs.existsSync(dbFile)) {
-        return null;
-    }
-    try {
-        return await new Promise((resolve, reject) => {
-            const readlineInterface = readline.createInterface({
-                input: fs.createReadStream(dbFile),
-                crifDelay: Infinity
-            });
-            const activities = [];
-            let activity;
-            readlineInterface.on('line', line => {
-                const tempActivity = JSON.parse(line);
-                if (tempActivity.id == id) {
-                    Object.keys(data).forEach(key => {
-                        tempActivity[key] = data[key];
-                    //for(let [key, item] of Object.entries(data)){
-                    //activity[key] = item;}
-                    });
-                    activity = {...tempActivity};
-                }
-                activities.push(JSON.stringify(activity));
-    });
-    readlineInterface.on('close', () => {
-        fs.writeFileSync(dbFile, activities.join('\n'), error => {
-            if (error) {
-                reject(null);
-            }
-            resolve(activity);
-        });
-    });
-})
-    } catch (error) {
-        return null;
-    }
-}
 
-export default {add, getActivities, getActivity, updateActivity};
+// updateActivity - UPDATE
+
+// Questa funzione aggiorna un'attività esistente con i nuovi dati forniti. 
+// Se l'attività viene trovata e aggiornata, viene restituita in formato JSON, altrimenti null. 
+// Gli errori vengono loggati.
+
+const updateActivity = async (id, data) => { //La funzione updateActivity accetta un ID e un oggetto data come argomenti e aggiorna un'attività esistente con i nuovi dati forniti.
+    try {
+        const activity = await activitySchema.findOneAndUpdate( //La funzione findOneAndUpdate di Mongoose cerca e aggiorna un documento nel database.
+            { _id: id },  //Cerca un documento per ID
+            data,       //Aggiorna il documento con i nuovi dati forniti
+            { new: true, upsert: false } //Ritorna l'oggetto aggiornato, senza creare nuovi documenti
+        );
+        
+        return activity ? activity.toJSON({ flattenObjectIds: true, versionKey: false }) : null;  //Se l'attività viene trovata e aggiornata, viene restituita in formato JSON, altrimenti null.
+
+    } catch (error) {
+        console.error('Errore durante l\'aggiornamento dell\'attività:', error.message); //Gli errori vengono loggati.
+        return null;
+    }
+};
+
+export default {add, getActivities, getActivity, updateActivity}; //Esporto le funzioni add, getActivities, getActivity e updateActivity per utilizzarle altrove nel codice.
+
+// Questo repository fornisce funzionalità per creare, leggere e aggiornare attività in un'applicazione To-Do List.
+// Utilizza lo schema activitySchema e il modello Activity per interagire con il database MongoDB.
+// Le funzioni forniscono operazioni CRUD per gestire le attività nel database
+// e restituiscono i risultati in formato JSON per l'utilizzo in altre parti dell'applicazione.
