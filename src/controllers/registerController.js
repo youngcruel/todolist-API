@@ -4,6 +4,7 @@ const register = async (req, res) => { // Creo una funzione asincrona che prende
 
     const data = req.body;  // Prendo i dati dal corpo della richiesta http (req) e li salvo in una variabile
                             //Es. {email: "email", password: "password"} 
+       console.log(data);                     
     try {  //Blocco try-catch per gestire la registrazione e gli errori
         
         const user = await userService.register(data); // Chiamo il metodo register del service passando i dati della richiesta http per registrare l'utente e salvo il risultato in una variabile

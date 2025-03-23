@@ -9,9 +9,9 @@ const config = {   //Creazione di un oggetto config con le variabili d'ambiente
         //host: 'localhost',  //Versione vecchia per usare il database locale
         //port: 27017, 
         //name: 'todolist'
-        connectionString: process.env.DB_CONNECTION_STRING //Stringa di connessione al database MongoDB Atlas
+        connectionString: process.env.MONGO_URI //Stringa di connessione al database MongoDB Atlas
     },
-    mailconfig: {                          //Configurazione del servizio di posta elettronica
+    mailConfig: {                          //Configurazione del servizio di posta elettronica
         host: 'smtp.gmail.com',            //Un oggetto che contiene le configurazioni per il server SMTP, inclusi l'host, la porta, la sicurezza
         port: 465,                         //La porta 465 è la porta standard per la sicurezza SSL
         secure: true,                     //La sicurezza è abilitata
@@ -19,7 +19,9 @@ const config = {   //Creazione di un oggetto config con le variabili d'ambiente
             user: process.env.MAIL_USER,   //Nome utente
             pass: process.env.MAIL_PASS    //Password
         }
-    }
+    },
+    accessTokenExpiration: 3600,   //3600s ovvero 1h, expiration del token di accesso
+    refreshTokenExpiration: 86400,   //1 mese, expiration del token di refresh
   }
 export default config; //Esportazione dell'oggetto config
 

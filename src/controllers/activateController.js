@@ -1,19 +1,18 @@
-import activityService from '../services/activityService.js'; // Importo il service che contiene la logica per interagire con le attività e il database
+import userService from '../services/userService.js'; // Importo il service che contiene la logica per interagire con le attività e il database
 
-const update = async (req, res) => { // Creo una funzione asincrona che prende in input req e res (controller - update)
+const activate = async (req, res) => { // Creo una funzione asincrona che prende in input req e res (controller - update)
 
-    const activityId = req.params.id; // Prendo l'id dell'attività dalla richiesta http (req) e lo salvo in una variabile
-    const data = req.body; // Prendo i dati dal corpo della richiesta http (req) e li salvo in una variabile
+    const token = req.params.token; // Prendo il token dell'attività dalla richiesta http (req) e lo salvo in una variabile
     
     try {
-        const activity = await activityService.updateActivity(activityId, data); // Chiamo il metodo updateActivity del service passando l'id dell'attività e i dati per aggiornarla
-        res.status(200).json(activity); // Altrimenti restituisco l'attività aggiornata con codice 200 (ok)
+        const user = await userService.activate(token); // Chiamo il metodo activate del service passando il token per confermare l'utente
+        res.status(200).json(user); // Altrimenti restituisco l'user con codice 200 (ok)
     } catch (error) {
         res.status(error.status).json({ message: error.message }); // Restituisco un messaggio di errore con codice e messaggio gestito in base alla situazione
     }
 }
 
-export default update; // Esporto la funzione update
+export default activate; // Esporto la funzione update
 
 // In questo snippet di codice, ho creato un controller per l'aggiornamento di un'attività nel database.
 // Ho importato il service activityService per interagire con le attività e il database.

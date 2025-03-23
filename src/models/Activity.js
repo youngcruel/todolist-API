@@ -6,6 +6,7 @@ class Activity {  //La classe Activity utilizza proprietà private (indicate dal
     #dueDate;       //Data di scadenza dell'attività
     #status;        //Stato dell'attività
     #id;            //ID dell'attività nel database
+    #userId;       
 
   //Il costruttore della classe accetta un oggetto activity come parametro e inizializza le proprietà private con i valori corrispondenti dell'oggetto  
   constructor(activity) {  
@@ -14,6 +15,7 @@ class Activity {  //La classe Activity utilizza proprietà private (indicate dal
     this.#description = activity.description;  //La descrizione dell'attività viene assegnata alla proprietà privata #description
     this.#dueDate = activity.dueDate;          //La data di scadenza dell'attività viene assegnata alla proprietà privata #dueDate
     this.#status = activity.status;            //Lo stato dell'attività viene assegnato alla proprietà privata #status
+    this.#userId = activity.userId;
   }
   //La classe Activity definisce i metodi getter per accedere alle proprietà private dell'attività
   get name() {         
@@ -31,6 +33,9 @@ class Activity {  //La classe Activity utilizza proprietà private (indicate dal
     get id() {
         return this.#id; //Il metodo getter id restituisce il valore della proprietà privata #id
     }
+    get userId() {
+      return this.#userId;
+    }
     toJSON() {    //Il metodo toJSON restituisce un oggetto che rappresenta l'attività in formato JSON, utile per serializzare l'oggetto Activity in una stringa JSON
         return {
             id: this.#id,
@@ -38,6 +43,7 @@ class Activity {  //La classe Activity utilizza proprietà private (indicate dal
             description: this.#description,
             dueDate: this.#dueDate,
             status: this.#status,
+            userId: this.#userId,
         };
     }
 }

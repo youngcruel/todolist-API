@@ -1,6 +1,7 @@
 // Questo codice definisce un modulo JavaScript che gestisce l'aggiunta di token di registrazione per gli utenti 
 // in un database utilizzando uno schema di Mongoose
 
+import MongoInternalException from '../exceptions/MongoInternalException.js';
 import tokenSchema from '../schema/registrationTokenSchema.js'; // Importo lo schema tokenSchema (Schema di Mongoose) per interagire con il database.
 // Viene importato lo schema tokenSchema dal file registrationTokenSchema.js. Questo schema definisce la struttura del documento nel database
 // per memorizzare i token di registrazione degli utenti.
@@ -20,7 +21,14 @@ const add = async (userId, token) => { // La funzione add accetta due parametri:
     });
 }
 
-export default {add}; // Il modulo esporta un oggetto con un metodo add che consente di aggiungere un token di registrazione per un utente nel database.
+const get = async (token) => {
+    const result = tokenSchema.findOne({registrationToken: token}).catch((err) => {
+        throw new MongoInternalException("Errore durante la ricerca del token", "tokenRepository.get")
+    })
+    return result;
+}
+
+export default {add, get}; // Il modulo esporta un oggetto con un metodo add che consente di aggiungere un token di registrazione per un utente nel database.
 
 // In sintesi, questo codice gestisce l'aggiornamento o la creazione di un token di registrazione per un utente specifico nel database.
 // Questo è utile per implementare la funzionalità di notifica push per gli utenti registrati nell'applicazione.

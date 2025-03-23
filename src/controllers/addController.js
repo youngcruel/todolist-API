@@ -5,6 +5,7 @@ const add = async (req, res) => { // Creo una funzione asincrona che prende in i
     const data = req.body; // Prendo i dati dal corpo della richiesta http (req) e li salvo in una variabile 
 
     try {   //Blocco try catch per gestire eventuali errori 
+        const data = {...req.body, userId: req.userId}
         const activity = await activityService.addActivity(data); // Chiamo il metodo addActivity del service passando i dati della richiesta http
                                                                   // per creare un'attività e salvo il risultato in una variabile
         if(!activity){                                                                 // Se l'attività non è stata creata

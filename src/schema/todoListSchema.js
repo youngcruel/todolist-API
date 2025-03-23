@@ -14,6 +14,10 @@ const todolistSchema = new mongoose.Schema(  // Definizione schema Mongoose per 
     status: { // Stato dell'attività (aperta, in corso, completata)
         type: String,  // Stringa che rappresenta lo stato dell'attività
         default: status.OPEN, // Stato di default: "aperta"
+    },
+    userId: {
+      type: String,
+      required: true,
     }
   },
   {

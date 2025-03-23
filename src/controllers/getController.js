@@ -13,8 +13,7 @@ const get = async (req, res) => { // Creo una funzione asincrona che prende in i
         res.status(200).json(activity); // Altrimenti restituisco l'attività con codice 200 (ok)
 
     } catch (error) { 
-        console.error("Errore nel controller get:", error);     // Se c'è un errore lo stampo in console
-        res.status(500).json({ message: "Errore interno del server" }); // Restituisco un messaggio di errore con codice 500 (errore interno del server)
+        res.status(error.status).json({ message: error.message }); // Restituisco un messaggio di errore con codice eccezione gestito in base alla situazione
     }
 }
 

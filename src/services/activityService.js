@@ -26,10 +26,20 @@ const getActivity = async (id) => {
 // Aggiorna un'attività esistente. 
 // Chiama la funzione updateActivity del repository passando l'ID dell'attività e i nuovi dati.
 const updateActivity = async (id, data) => {
-    return await activityRepository.updateActivity(id, data);
+    const activity =  await activityRepository.updateActivity(id);
+    if (!activity) {
+        throw new NotFoundException("Attività non trovata", "activityRepository.updateActivity");
+    };
+    return activity
 }
 
-export default { addActivity, getActivities, getActivity, updateActivity }; // Esporta le funzioni del servizio per poterle utilizzare altrove nell'applicazione
+// Elimina un'attività esistente. 
+// Chiama la funzione updateActivity del repository passando l'ID dell'attività e i nuovi dati.
+const deleteActivity = async (id) => {
+    return await activityRepository.updateActivity(id, {status: 'deleted'});
+}
+
+export default { addActivity, getActivities, getActivity, updateActivity, deleteActivity}; // Esporta le funzioni del servizio per poterle utilizzare altrove nell'applicazione
 
 // In sintesi, il file activityService.js contiene un servizio che fornisce un'interfaccia per effettuare e gestire le operazioni relative alle attività 
 // in un'applicazione Node.js delegando le operazioni effettive al repository delle attività.

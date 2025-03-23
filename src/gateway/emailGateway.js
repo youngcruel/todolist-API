@@ -23,10 +23,26 @@
 import nodemailer from 'nodemailer';            // Importa il modulo nodemailer per inviare email in node.js
 import config from '../../config/config.js';    // Importa la configurazione del server e del database da config.js
 
-const sendRegistrationEmail = async (email, link) => {      // Funzione asincrona che accetta un indirizzo email e un link di conferma come argomenti
+const sendRegistrationEmail = async (email, token) => {      // Funzione asincrona che accetta un indirizzo email e un link di conferma come argomenti
     
-    const subject = "Registration Confirmation";                                                // Oggetto dell'email
-    const message = `Please click on the link below to confirm your registration: ${link}`;     // Corpo del messaggio dell'email
+    const confirmationLink = `http://localhost:8000/user/activate/${token}`; //Genera link di conferma
+
+    const subject = "Registration Confirmation";                                        // Oggetto dell'email
+    const htmlMessage = `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2>Benvenuto su Todolist!</h2>
+            <p>Clicca sul pulsante qui sotto per confermare la tua registrazione:</p>
+            <a href="${confirmationLink}" 
+                style="display: inline-block; padding: 10px 20px; margin: 10px 0; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">
+                Conferma il tuo account
+            </a>
+            <p>Oppure copia e incolla il seguente link nel tuo browser:</p>
+            <p><a> href="${confirmationLink}">${confirmationLink}</a></p>
+            <hr>
+            <p style="color: #777;">Se non hai richiesto questa registrazione, ignora questa email.</p>
+        </div>
+    `;
+
     const transporter = nodemailer.createTransport(config.mailConfig);                          // Crea un oggetto transporter per inviare l'email
     // Transporter è un oggetto creato con nodemailer.createTransport utilizzando le configurazioni specificate in config.mailConfig.
 
@@ -35,7 +51,7 @@ const sendRegistrationEmail = async (email, link) => {      // Funzione asincron
             from: `"Todolist service" <${config.mailConfig.auth.user}>`, // Indirizzo email del mittente
             to: email,                                  // Invia l'email all'indirizzo specificato con l'oggetto e il corpo del messaggio specificati.
             subject,                                    // Invia l'email all'indirizzo specificato con l'oggetto e il corpo del messaggio specificati.
-            text: message                               // Invia l'email all'indirizzo specificato con l'oggetto e il corpo del messaggio specificati.
+            html: htmlMessage                           // Invia l'email all'indirizzo specificato con l'oggetto e il corpo del messaggio specificati.
         });
         return result; // Se l'email viene inviata con successo, restituisce il risultato.
 

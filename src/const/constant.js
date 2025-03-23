@@ -1,6 +1,6 @@
 export const status = {   //Creazione di un oggetto status con i possibili stati di un'attività
     OPEN: 'open',         //Stato aperto
-    DONE: 'done',         //Stato completato
+    COMPLETED: 'completed',         //Stato completato
     DELETED: 'removed',   //Stato rimosso
     };
 

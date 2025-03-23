@@ -7,6 +7,8 @@ import addValidator from '../validators/addValidator.js';  // Importo il validat
 import updateValidator from '../validators/updateValidator.js'; // Importo il validatore updateValidator per validare i dati di input per l'aggiornamento di un'attività.
 import deleteValidator from '../validators/deleteValidator.js'; // Importo il validatore deleteValidator per validare i dati di input per la rimozione di un'attività.
 import registerUserValidator from '../validators/registerUserValidator.js'; // Importo il validatore registerUserValidator per validare i dati di input per la registrazione di un utente.
+import activateValidator from '../validators/activateValidator.js';
+import loginUserValidator from '../validators/loginUserValidator.js';
 
 // Import controller
 import addController from '../controllers/addController.js'; // Importo il controller addController per gestire l'aggiunta di un'attività.
@@ -15,6 +17,10 @@ import getController from '../controllers/getController.js'; // Importo il contr
 import updateController from '../controllers/updateController.js'; // Importo il controller updateController per gestire l'aggiornamento di un'attività.
 import deleteController from '../controllers/deleteController.js'; // Importo il controller deleteController per gestire la rimozione di un'attività.
 import registerController from '../controllers/registerController.js'; // Importo il controller registerController per gestire la registrazione di un utente.
+import activateController from '../controllers/activateController.js';
+import loginController from '../controllers/loginController.js';
+
+import authMiddleware from '../middleware/authMiddleware.js';
 
 // Questi moduli sono utilizzati per validare le richieste e gestire le risposte.
 // I validatori validano i dati di input delle richieste HTTP.
@@ -23,12 +29,14 @@ import registerController from '../controllers/registerController.js'; // Import
 
 const setup = (app) => {
     //Definizione delle routes
-    app.get('/:id', getValidator, getController); // Recupera un'attività specifica per ID, validando la richiesta con getValidator e gestendo la risposta con getController
-    app.get('/', getManyController);  // Recupera tutte le attività, gestendo la risposta con getManyController.
-    app.post('/', addValidator, addController); //Aggiunge un'attività, validando la richiesta con addValidator e gestendo la risposta con addController.
-    app.patch('/:id', updateValidator, updateController); // Aggiorna un'attività specifica per ID, validando la richiesta con updateValidator e gestendo la risposta con updateController.
-    app.delete('/:id', deleteValidator, deleteController); // Rimuove un'attività specifica per ID, validando la richiesta con deleteValidator e gestendo la risposta con deleteController.
+    app.get('/:id', authMiddleware, getValidator, getController); // Recupera un'attività specifica per ID, validando la richiesta con getValidator e gestendo la risposta con getController
+    app.get('/', authMiddleware, getManyController);  // Recupera tutte le attività, gestendo la risposta con getManyController.
+    app.post('/', authMiddleware, addValidator, addController); //Aggiunge un'attività, validando la richiesta con addValidator e gestendo la risposta con addController.
+    app.patch('/:id', authMiddleware, updateValidator, updateController); // Aggiorna un'attività specifica per ID, validando la richiesta con updateValidator e gestendo la risposta con updateController.
+    app.delete('/:id', authMiddleware, deleteValidator, deleteController); // Rimuove un'attività specifica per ID, validando la richiesta con deleteValidator e gestendo la risposta con deleteController.
     app.post('/user', registerUserValidator, registerController); // Aggiunge un utente, validando la richiesta con registerUserValidator e gestendo la risposta con registerController.
+    app.get('/user/activate/:token', activateValidator, activateController);
+    app.post('/user/login', loginUserValidator, loginController);
 
     //middleware per gestire errori Joi
 

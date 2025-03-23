@@ -2,25 +2,18 @@ import activityService from '../services/activityService.js'; // Importo il serv
 
 const remove = async (req, res) => { // Creo una funzione asincrona che prende in input req e res (controller - rimuovi)
 
-    const activityId = req.param('id'); // Prendo l'id dell'attività dalla richiesta http (req) e lo salvo in una variabile
-    const data = {status: 'deleted'}; // Creo un oggetto con lo stato 'deleted' per aggiornare l'attività con questo stato 
+    const activityId = req.params.id; // Prendo l'id dell'attività dalla richiesta http (req) e lo salvo in una variabile
+    const userId = req.userId
 
     try { // Blocco try catch per gestire eventuali errori
-        const activity = await activityService.updateActivity(activityId, data); // Chiamo il metodo updateActivity del service passando l'id dell'attività e i dati per aggiornarla
+        const activity = await activityService.deleteActivity(activityId, userId); // Chiamo il metodo delete Activity del service passando l'id dell'attività e i dati per rimuoverla
 
-        if (!activity) {  // Se l'attività non è stata trovata
-            console.log(`Attività con ID ${activityId} non trovata.`);  // Stampo un messaggio in console
-            return res.status(404).json({ message: "Nessuna attività trovata con questo ID" }); // Restituisco un messaggio di errore con codice 404 (non trovato)
-            }
-
-        res.status(200).json(activity); // Altrimenti restituisco l'attività aggiornata con codice 200 (ok)
+        res.status(200).json(); // Altrimenti restituisco codice 200 (ok) 
 
     } catch (error) { 
-        console.error("Errore nel controller update:", error); // Se c'è un errore lo stampo in console
-        res.status(500).json({ message: "Errore interno del server" }); // Restituisco un messaggio di errore con codice 500 (errore interno del server)
+        res.status(error.status).json({ message: error.message }); // Restituisco un messaggio di errore gestito dalle exceptions
     }
-}
-
+};
 
 export default remove; // Esporto la funzione remove
 
