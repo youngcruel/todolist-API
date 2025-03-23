@@ -1,3 +1,5 @@
 node_modules/
 activity.db
 .env
+todolistRS256.key
+todolistRS256-key.pub

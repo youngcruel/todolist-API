@@ -9,7 +9,7 @@ const authMiddleware = (req, res, next) => {
     try {
         const decoded = cryptoUtils.verifyJWT(token);
         if (!decoded) {
-            return res.status(401).json({message: "Errore di autenticazione"})
+            return res.status(401).json({message: `Errore di autenticazione: ${error.message}`})
         }
         req.userId = decoded.sub;
         next();

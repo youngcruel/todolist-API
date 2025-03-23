@@ -4,10 +4,11 @@ import { createValidator } from 'express-joi-validation';
 const validator = createValidator({ passError: true });
 
 export default [
-  validator.body(
+  validator.query(
     Joi.object().keys({
-      email: Joi.string().email({ tlds: { allow: false } }),
-      password: Joi.string().required(),
+      cursor: Joi.string().hex().length(24).allow(null, '').optional(),
+      limit: Joi.number().integer().default(10).optional(),
+      direction: Joi.string().valid('next', 'prev').default('next').optional(),
     })
   ),
   validator.headers(

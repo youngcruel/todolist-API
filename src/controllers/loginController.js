@@ -1,14 +1,13 @@
 import userService from "../services/userService.js";
+import userNormalizer from '../normalizer/userNormalizer.js';
 
 const login = async (req, res) => {
     const {email, password} = req.body;
     try {
-        console.log('logincontroller console log')
-        const loginResponse = await userService.login(email, password);
-        return res.status(200).json(loginResponse);
+        const {user, accessToken, refreshToken} = await userService.login(email, password);
+        return res.status(200).json(userNormalizer(user, accessToken, refreshToken));
     } catch (error) {
-        console.log(error)
-        res.status(error.status || 500).json({message: error.message})
+        res.status(error.status).json({message: error.message})
     }
 };
 
