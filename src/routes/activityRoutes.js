@@ -10,14 +10,13 @@ import cursorValidator from '../validators/cursorValidator.js';
 
 // Import controller
 import addController from '../controllers/addController.js'; 
-import getManyController from '../controllers/getManyController.js'; 
+import { getMany, getActivitiesByCursor } from '../controllers/getManyController.js';
 import getController from '../controllers/getController.js'; 
 import updateController from '../controllers/updateController.js'; 
 import deleteController from '../controllers/deleteController.js'; 
 import registerController from '../controllers/registerController.js'; 
 import activateController from '../controllers/activateController.js';
 import loginController from '../controllers/loginController.js';
-import { getActivitiesByCursor } from '../controllers/getManyController.js';
 
 import authMiddleware from '../middleware/authMiddleware.js';
 import cursorPagination from '../middleware/cursorPagination.js';
@@ -26,7 +25,7 @@ const setup = (app) => {
     //Definizione delle routes
     app.get('/:id', authMiddleware, getValidator, getController); 
     app.get('/activities', authMiddleware, cursorValidator, cursorPagination, getActivitiesByCursor);
-    app.get('/', authMiddleware, getManyController); 
+    app.get('/', authMiddleware, getMany); 
     app.post('/', authMiddleware, addValidator, addController); 
     app.patch('/:id', authMiddleware, updateValidator, updateController);
     app.delete('/:id', authMiddleware, deleteValidator, deleteController);

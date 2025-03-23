@@ -1,6 +1,5 @@
 import userService from "../services/userService.js";
-import userNormalizer from '../normalizer/userNormalizer.js';
-
+import userNormalizer from "../normalizer/userNormalizer.js";
 const login = async (req, res) => {
     const {email, password} = req.body;
     try {

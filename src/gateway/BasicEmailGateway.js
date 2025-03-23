@@ -1,6 +1,6 @@
+import EmailGateway from './emailGateway.js';
 import nodemailer from 'nodemailer';           
 import config from '../../config/config.js';    
-import EmailGateway from './BasicEmailGateway.js';
 
 class BasicEmailGateway extends EmailGateway {
     #instance;
