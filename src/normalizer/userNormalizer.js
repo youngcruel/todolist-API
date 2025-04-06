@@ -1,11 +1,19 @@
-const userNormalizer = (user, accessToken, refreshToken) => {
+class UserNormalizer {
+  #user;
+
+  constructor(user) {
+    this.#user = user;
+  }
+
+  getLogin() {
     return {
-      userId: user._id,
-      email: user.email,
-      accessToken,
-      refreshToken,
+      id: this.#user.id.toString(),
+      email: this.#user.email,
+      accessToken: this.#user.accessToken,
+      refreshToken: this.#user.refreshToken,
     };
-  };
-  
-  export default userNormalizer;
-  
+  }
+  //getFullUser per restituire anche le altre propr
+}
+
+export default UserNormalizer;

@@ -1,92 +1,68 @@
-import userRepository from "../repository/userRepository.js";
-import tokenRepository from "../repository/tokenRepository.js";
 import config from "../../config/config.js";
-import cryptoUtils from "../utils/cryptoUtils.js";   
-import { userStatus } from "../const/constant.js";
-import NotFoundException from "../exceptions/NotFoundException.js"; 
-import UnauthorizedException from "../exceptions/UnauthorizedException.js";
+import userRepository from "../repository/UserRepository.js";
+import cryptoUtils from "../utils/cryptoUtils.js";
+import tokenRepository from "../repository/TokenRepository.js";
 import EmailGatewayFactory from "../gateway/EmailGatewayFactory.js";
+import UnauthorizedException from "../exceptions/UnauthorizedException.js";
 
 class UserService {
-    constructor() {
-      this.emailGateway = EmailGatewayFactory.build(config.mailConfig.type);
-    }
-    async register(data) {
-      this.emailGateway = EmailGatewayFactory.build(config.mailConfig.type);
-      const { password, salt } = await cryptoUtils.hashPassword(data.password);
-      data.password = password;
-      data.salt = salt;
-      const user = await userRepository.add(data);
-      const registrationToken = cryptoUtils.generateUniqueCode(10);
-      await tokenRepository.add(user._id, registrationToken);
-      //const emailGateway = EmailGatewayFactory.build(config.mailConfig.type);
-      this.emailGateway.sendRegistrationMail(user.email, registrationToken);
-      return user;
-    }
-  
-    async activate(token) {
-      const tokenData = await tokenRepository.get(token);
-      if (!tokenData) {
-        throw new NotFoundException('Token not found', 'userService.activate');
-      }
-      const user = await userRepository.activate(tokenData.userId);
-      if (!user) {
-        throw new NotFoundException('Attivazione utente fallita', 'userService.activate');
-      }
-      console.log('Utente attivato:', user);
-      return user;
-    }
-  
-    async login(email, password) {
-      const user = await userRepository.getByEmail(email);
-      if (!user || user.status !== userStatus.ACTIVE || !cryptoUtils.comparePassword(password, user)) {
-        throw new UnauthorizedException('Non autorizzato ', 'userService.login');
-      }
-      const { accessToken, refreshToken } = cryptoUtils.generateTokens(user);
-      user.accessToken = accessToken;
-      user.refreshToken = refreshToken;
-      //return user;
-      return { user, accessToken, refreshToken };
-    }
+  constructor() {
+    this.emailGateway = EmailGatewayFactory.build(config.mailConfig.type);
   }
-  export default new UserService();
-  
-  //const register = async (data) => {
-  //  const { password, salt } = await cryptoUtils.hashPassword(data.password);
-  //  data.password = password;
-  //  data.salt = salt;
-  //  const user = await userRepository.add(data);
-  //  const registrationToken = cryptoUtils.generateUniqueCode(10);
-  //  await tokenRepository.add(user._id, registrationToken);
-  //  const emailGateway = EmailGatewayFactory.build(config.mailConfig.type);
-  //  await emailGateway.sendRegistrationMail(user.email, registrationToken);
-  //  return user;
-  //};
-  //
-  //const activate = async (token) => {
-  //  const tokenData = await tokenRepository.get(token);
-  //  if (!tokenData) {
-  //    throw new NotFoundException('Token not found', 'userService.activate');
-  //  }
-  //  const user = await userRepository.activate(tokenData.userId);
-  //  if (!user) {
-  //    throw new NotFoundException('Activation failed', 'userService.activate');
-  //  }
-  //  console.log('User activated:', user);
-  //  return user;
-  //};
-  //
-  //const login = async (email, password) => {
-  //  const user = await userRepository.getByEmail(email);
-  //  if (!user || user.status !== userStatus.ACTIVE || !cryptoUtils.comparePassword(password, user)) {
-  //    throw new UnauthorizedException('Unauthorized ', 'userService.login');
-  //  }
-  //  const { accessToken, refreshToken } = cryptoUtils.generateTokens(user);
-  //  user.accessToken = accessToken;
-  //  user.refreshToken = refreshToken;
-  //  return user;
-  //  //return { user, accessToken, refreshToken };
-  //};
-  //
-  //export default { register, activate, login };
-  
+
+  // Registra un nuovo utente
+  async register(data) {
+    // Genera l'hash della password con un salt
+    const { password, salt } = cryptoUtils.hashPassword(data.password);
+    data.password = password;
+    data.salt = salt;
+
+    // Salva l'utente nel database
+    const user = await userRepository.add(data);
+
+    // Genera un token di registrazione per la conferma via email
+    const registrationToken = cryptoUtils.generateUniqueCode(10);
+    await tokenRepository.add(user.id, registrationToken);
+
+    // Invia l'email di conferma
+    await this.emailGateway.sendRegistrationEmail(
+      user.email,
+      registrationToken
+    );
+
+    return user;
+  }
+
+  // Attiva un nuovo utente
+  async activate(token) {
+    // Cerca il token
+    const tokenData = await tokenRepository.get(token);
+
+    // Attiva l'utente
+    const user = await userRepository.activate(tokenData.userId);
+
+    return user;
+  }
+
+  //Logga un nuovo utente
+  async login(data) {
+    // Cerca l'utente per email
+    const user = await userRepository.getByEmail(data.email);
+
+    if (
+      !user ||
+      user.status !== "active" ||
+      !cryptoUtils.comparePassword(data.password, user)
+    ) {
+      throw new UnauthorizedException("Unathorized", "userService.login");
+    }
+
+    const { accessToken, refreshToken } = cryptoUtils.generateTokens(user);
+
+    user.accessToken = accessToken;
+    user.refreshToken = refreshToken;
+
+    return user;
+  }
+}
+export default new UserService();

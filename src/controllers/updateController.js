@@ -1,17 +1,20 @@
-import activityService from '../services/activityService.js'; 
+import activityService from "../services/ActivityService.js";
 
-const update = async (req, res) => { 
+const update = async (req, res) => {
+  const activityId = req.params.id;
+  const data = req.body;
+  const userId = req.userId;
 
-    const activityId = req.params.id; 
-    const userId = req.userId;
-    const data = req.body; 
-    
-    try {
-        const activity = await activityService.updateActivity(activityId, userId, data); 
-        res.status(200).json(activity); 
-    } catch (error) {
-        res.status(error.status).json({ message: error.message }); 
-    }
-}
+  try {
+    const activity = await activityService.updateActivity(
+      activityId,
+      data,
+      userId
+    );
+    res.status(200).json(activity);
+  } catch (error) {
+    res.status(error.status).json({ code: error.code, message: error.message });
+  }
+};
 
-export default update; 
+export default update;

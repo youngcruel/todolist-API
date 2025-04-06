@@ -1,23 +1,40 @@
-import MongoInternalException from '../exceptions/MongoInternalException.js';
-import tokenSchema from '../schema/registrationTokenSchema.js'; 
+import MongoInternalException from "../exceptions/MongoInternalException.js";
+import tokenSchema from "../schema/registrationTokenSchema.js";
 
-const add = async (userId, token) => { 
-    const result = tokenSchema
-    .findOneAndUpdate( 
-        {userId: userId},               
-        {registrationToken: token},     
-        {upsert: true})
-    .catch((err) => {                  
-        throw err;
-    });
+class TokenRepository {
+  async add(userId, token) {
+    const result = await tokenSchema
+      .findOneAndUpdate(
+        { userId: userId },
+        { registrationToken: token },
+        { upsert: true, new: true }
+      )
+      .catch(() => {
+        throw new MongoInternalException(
+          "Errore durante l'aggiunta del token",
+          "TokenRepository.add"
+        );
+      });
+
     return result;
+  }
+
+  async get(token) {
+    const result = await tokenSchema
+      .findOne({ registrationToken: token })
+      .catch(() => {
+        throw new MongoInternalException(
+          "Errore durante la ricerca del token",
+          "TokenRepository.get"
+        );
+      });
+
+    if (!tokenData) {
+      throw new NotFoundException("Token non trovato", "tokenRepository.get");
+    }
+
+    return result;
+  }
 }
 
-const get = async (token) => {
-    const result = tokenSchema.findOne({registrationToken: token}).catch((err) => {
-        throw new MongoInternalException("Errore durante la ricerca del token", "tokenRepository.get")
-    })
-    return result;
-}
-
-export default {add, get}; 
+export default new TokenRepository();

@@ -6,18 +6,14 @@ const validator = createValidator({ passError: true });
 export default [
   validator.body(
     Joi.object().keys({
-      name: Joi.string().required().min(3),
-      description: Joi.string().required().min(3),
+      name: Joi.string().optional().min(3),
+      description: Joi.string().optional().min(3),
       dueDate: Joi.number().min(new Date().getTime()).optional(),
     })
   ),
   validator.params(
     Joi.object().keys({
-      id: Joi.string()
-        //.regex(/^(?!0+[1-9]+)\d+$/)
-        .hex()
-        .length(24)
-        .required(),
+      id: Joi.string().hex().length(24).required(),
     })
   ),
   validator.headers(

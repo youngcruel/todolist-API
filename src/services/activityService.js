@@ -1,36 +1,47 @@
-import activityRepository from '../repository/activityRepository.js'; // Importa il repository per le attività
+import activityRepository from "../repository/ActivityRepository.js";
 
-// Aggiunge una nuova attività
-const addActivity = async (data) => {
+class ActivityService {
+  async addActivity(data) {
     return await activityRepository.add(data);
-};
+  }
 
-// Recupera tutte le attività. 
-const getActivities = async (userId, skip, limit) => {
-    return await activityRepository.getActivities(userId, skip, limit);
+  async getActivities(userId, page, limit, status) {
+    return await activityRepository.getActivities(userId, page, limit, status);
+  }
+
+  async getActivitiesByCursor(userId, limit, cursor, direction, status) {
+    return await activityRepository.getActivitiesByCursor(
+      userId,
+      limit,
+      cursor,
+      direction,
+      status
+    );
+  }
+
+  async getActivity(activityId, userId) {
+    return await activityRepository.getActivity(activityId, userId);
+  }
+
+  async updateActivity(activityId, data, userId) {
+    return await activityRepository.updateActivity(activityId, data, userId);
+  }
+
+  async completeActivity(activityId, userId) {
+    return await activityRepository.completeActivity(activityId, userId);
+  }
+
+  async reOpenActivity(activityId, userId) {
+    return await activityRepository.reOpenActivity(activityId, userId);
+  }
+
+  async archiveActivity(activityId, userId) {
+    return await activityRepository.archiveActivity(activityId, userId);
+  }
+
+  async deleteActivity(activityId, userId) {
+    return await activityRepository.deleteActivity(activityId, userId);
+  }
 }
-// Cerca un'attività per cursore mongo. 
-const getActivitiesByCursor = async (userId, cursor, limit, direction) => {
-    return await activityRepository.getActivitiesByCursor(userId, cursor, limit, direction);
-  };
 
-// Cerca un'attività per ID. 
-const getActivity = async (id, userId) => {
-    return await activityRepository.getActivity(id, userId);
-};
-
-// Aggiorna un'attività esistente. 
-const updateActivity = async (id, data, userId) => {
-    const activity =  await activityRepository.updateActivity(id, data. userId);
-    if (!activity) {
-        throw new NotFoundException("Attività non trovata", "activityRepository.updateActivity");
-    };
-    return activity
-}
-
-// Elimina un'attività esistente. 
-const deleteActivity = async (id, userId) => {
-    return await activityRepository.updateActivity(id, userId, {status: 'deleted'});
-}
-
-export default { addActivity, getActivities, getActivity, updateActivity, deleteActivity, getActivitiesByCursor}; 
+export default new ActivityService();

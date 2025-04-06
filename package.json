@@ -25,5 +25,8 @@
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "sinon": "^19.0.4"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.1.4"
   }
 }

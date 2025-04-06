@@ -1,4 +1,4 @@
-import activityService from '../services/activityService.js'; 
+import activityService from '../services/ActivityService.js'; 
 
 const get = async (req, res) => { 
  
