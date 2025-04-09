@@ -4,7 +4,7 @@ dotenv.config();
 const config = {   
     dbFile: 'activity.db', 
     host: 'localhost',    
-    port: 8000,           
+    port: process.env.PORT,           
     db: {
         //host: 'localhost',  //Versione vecchia per usare il database locale
         //port: 27017, 

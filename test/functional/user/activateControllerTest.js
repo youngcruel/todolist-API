@@ -13,7 +13,7 @@ const sandbox = sinon.createSandbox();
 
 const route = "/user/activate/:token";
 
-describe.only("Activate User Controller Test", () => {
+describe("Activate User Controller Test", () => {
   beforeEach(async () => {
     sandbox.restore();
   });
@@ -24,17 +24,17 @@ describe.only("Activate User Controller Test", () => {
   });
 
   // Success
-  describe("/GET/user success", () => {
+  describe("GET /user/activate/:token success", () => {
     
-    it("should return 200", async () => {
+    it.only("should return 200", async () => {
       
       const testUser = await TestUtils.createFakeUser(userStatus.ACTIVE, "password");
       const activationToken = await TestUtils.createFakeToken(testUser.id, testUser.token);
-
       const res = await request.execute(app)
         .get(route.replace(":token", activationToken.registrationToken));
 
     expect(res).to.have.status(200);
+    console.log("res", res.body);
     expect(res.body).to.have.property("accessToken");
     expect(res.body).to.have.property("refreshToken");
     expect(res.body.email).eq(testUser.email);

@@ -1,4 +1,5 @@
 import MongoInternalException from "../exceptions/MongoInternalException.js";
+import NotFoundException from "../exceptions/NotFoundException.js";
 import tokenSchema from "../schema/registrationTokenSchema.js";
 
 class TokenRepository {
@@ -29,7 +30,7 @@ class TokenRepository {
         );
       });
 
-    if (!tokenData) {
+    if (!result) {
       throw new NotFoundException("Token non trovato", "tokenRepository.get");
     }
 

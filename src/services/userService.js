@@ -37,10 +37,10 @@ class UserService {
   async activate(token) {
     // Cerca il token
     const tokenData = await tokenRepository.get(token);
-
+    console.log("tokenData", tokenData);
     // Attiva l'utente
     const user = await userRepository.activate(tokenData.userId);
-
+    console.log("user", user);
     return user;
   }
 

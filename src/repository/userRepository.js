@@ -32,7 +32,7 @@ class UserRepository {
   async activate(id) {
     const user = await userSchema
       .findOneAndUpdate(
-        { _id: id, status: userStatus.PENDING },
+        { _id: id, status:[userStatus.ACTIVE, userStatus.PENDING]},
         { status: userStatus.ACTIVE },
         { new: true, upsert: false }
       )

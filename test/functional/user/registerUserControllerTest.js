@@ -16,7 +16,7 @@ const sandbox = sinon.createSandbox();
 let route = "/user";
 let stub;
 
-describe.only("Register User Controller Test", () => {
+describe("Register User Controller Test", () => {
   beforeEach(async () => {
     stub = sandbox
       .stub(BasicEmailGateway.prototype, "sendRegistrationEmail")

@@ -14,7 +14,7 @@ const sandbox = sinon.createSandbox();
 
 let route = "/user/login";
 
-describe.only("Login User Controller Test", () => {
+describe("Login User Controller Test", () => {
   beforeEach(async () => {
     sandbox.restore();
   });
