@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /usr/local/repo/todolist
+cd /usr/local/repo/trap-mafia
 git stash 
 git fetch
 git checkout main
