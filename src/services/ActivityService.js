@@ -1,4 +1,4 @@
-import activityRepository from "../repository/ActivityRepository.js";
+import activityRepository from '../repositoryActivityRepository.js';
 
 class ActivityService {
   async addActivity(data) {
